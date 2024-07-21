@@ -38,3 +38,4 @@ tests/*.log
 # Ignore other common generated files
 *.tmp
 *.cache
+*.DS_Store
