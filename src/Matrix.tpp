@@ -163,7 +163,6 @@ std::vector<std::vector<T>> Matrix<T>::getData() const {
 
 template<typename T>
 T Matrix<T>::getData(size_t row, size_t col) const {
-    // std::cout << sdt::endl << m_data[row][col] << " is the final data at (" << row << ", " << col << ")" << std::endl;
     return getData({row,row+1}, {col,col+1})[0][0];
 }
 
@@ -746,6 +745,107 @@ void Matrix<T>::assertCanFormSystemWith(const Vector<U>& vecB) const {
     if (vecB.isRow() && (vecB.dim() > 1)) {
         throw std::invalid_argument("Cannot form a system with a row vector.");
     }
+}
+
+template<typename T>
+template<typename U>
+std::vector<size_t> Matrix<T>::sortWithScrambler(std::function<U(const std::vector<T>&)> functional, const size_t index) {
+    // make sure the function to sort by returns a type with defined ordering operations
+    assertTypesAreArithmetic<U>();
+
+    // ensure index is 0 or 1
+    if (!(index == 0) && !(index == 1)) {
+        throw std::invalid_argument("Index must be 0 or 1 to sort rows or columns.");
+    }
+
+    // make vector of indices
+    size_t maxBound = (index == 0) ? m_rows : m_cols;
+    std::vector<size_t> indices(maxBound);
+    std::iota(indices.begin(), indices.end(), 0);
+
+    // define lambda that sorts indices based on the corresponding values of the given vector
+    auto sortByVal = [](std::vector<size_t>& indices, const std::vector<U>& vec) {
+        std::sort(
+            indices.begin(), indices.end(), [&vec](const size_t indexOne, const size_t indexTwo) {
+                return vec[indexOne] > vec[indexTwo];
+        });
+    };
+
+    // apply desired function to each row (if index is 0) or column (if index is 1), then apply sorting function
+    if (index == 0) {
+        std::vector<U> rowVals(m_rows);
+
+        for (size_t i = 0; i < m_rows; i++) {
+            rowVals[i] = functional(m_data[i]);
+        }
+
+        sortByVal(indices, rowVals);
+
+        // convert to scrambler format (i.e., if the vector represents a mapping from index to index, construct its inverse)
+        std::vector<size_t> rowScrambler(m_rows);
+        for (size_t i=0; i < m_rows; i++) {
+            rowScrambler[indices[i]] = i;
+        }
+        return rowScrambler;
+    }
+
+    else { // index == 1
+        std::vector<U> colVals(m_cols);
+
+        for (size_t j = 0; j < m_cols; j++) {
+            std::vector<T> colVec(m_rows);
+            for (size_t i = 0; i < m_rows; i++) {
+                colVec[i] = m_data[i][j];
+            }
+            colVals[j] = functional(colVec);
+        }
+
+        sortByVal(indices, colVals);
+
+        // convert to scrambler format (i.e., if the vector represents a mapping from index to index, construct its inverse)
+        std::vector<size_t> colScrambler(m_cols);
+        for (size_t i=0; i < m_cols; i++) {
+            colScrambler[indices[i]] = i;
+        }
+
+        return colScrambler;
+    }
+}
+
+template<typename T>
+void Matrix<T>::scramble(const std::vector<size_t>& indices, size_t index) {
+    if (!(index == 0) && !(index == 1)) {
+        throw std::invalid_argument("Index must be 0 or 1 to sort rows or columns.");
+    }
+
+    size_t maxDim = (index == 0) ? m_rows : m_cols;
+    if (indices.size() != maxDim) {
+        throw std::invalid_argument("Index vector must have same length as Vector.");
+    }
+    
+    std::vector<bool> visitedIndices(maxDim, false);
+    std::vector<std::vector<T>> scrambledData(m_rows, std::vector<T>(m_cols));
+
+    for (size_t i=0; i < maxDim; i++) {
+        size_t indexFromVec = indices[i];
+        if (indexFromVec >= maxDim) {
+            throw std::invalid_argument("All indices must be within range to scramble.");
+        }
+        if (visitedIndices[indexFromVec] == true) {
+            throw std::invalid_argument("List of indices must be unique to scramble.");
+        }
+        if (index == 0) {
+            scrambledData[indexFromVec] = m_data[i];
+        }
+        if (index == 1) {
+            for (size_t j=0; j < m_rows; j++) {
+                scrambledData[j][indexFromVec] = m_data[j][i];
+            }
+        }
+        visitedIndices[indexFromVec] = true;
+    }
+
+    m_data = scrambledData;
 }
 
 template<typename T>

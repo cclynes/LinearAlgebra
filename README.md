@@ -32,6 +32,7 @@ There's not much to run right now except tests. To run tests:
 The following is a running list of some things I need to take care of, in no particular order:
 
 - Separate out the functions for returning a decomposition (e.g. LU, QR) and the functions for solving systems using that decomposition
+    - Create structures or classes for decompositions to allow for easy access and abstract system-solving functionality.
 - Add QR functionality for underdetermined (easy) and rank-deficient (slightly harder) systems
 - Add eigenvector/eigenvalue functionality
 - Add rank calculation

@@ -182,8 +182,6 @@ TEST_F(MatrixQRFixture, QRWorksWithSquareMatrices) {
     EXPECT_TRUE(threeByTwoMat.solveQR(threeDimVecSol, tol).isNear(twoDimVecOfOnes, tol));
     EXPECT_TRUE(threeByTwoMat.solveQR(threeDimVecUnreachable, tol).isNear(twoDimMultipleForProjectedSol, tol));
     // EXPECT_TRUE(fourByThreeColRankDeficientMat.solveQR(fourDimRankDeficientVecSol, tol).isNear(threeDimVecOfOnes, tol));
-    threeByTwoMat.solveQR(threeDimVecUnreachable, tol).print();
-    twoDimMultipleForProjectedSol.print();
 }
 
 class MatrixLUFixture : public ::BaseMatrixFixture {

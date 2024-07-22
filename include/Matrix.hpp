@@ -4,6 +4,7 @@
 #include "Vector.hpp"
 #include "Utility.hpp"
 #include <vector>
+#include <functional>
 
 template<typename T>
 class Vector;
@@ -149,6 +150,14 @@ public:
     template<typename U>
     bool diagIsNonZero(U tol) const;
 
+    // function to sort the rows/columns of a matrix by some rule that returns an arithmetic type
+    // returns a vector vec of indices representing the new row/column locations, where vec[i] = j means i should go to j
+    template<typename U>
+    std::vector<size_t> sortWithScrambler(std::function<U(const std::vector<T>&)> functional, const size_t index);
+
+    // function to scramble the rows/columns of a matrix according to the given index vector
+    void scramble(const std::vector<size_t>& indices, size_t index);
+
 private:
     // variables to hold matrix dimensions and data
     size_t m_rows;
@@ -166,6 +175,7 @@ private:
     auto solveForwardSubUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decltype(T{} * U{})>;
     template<typename U, typename V>
     auto solveCholeskyUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decltype(T{} * U{})>;
+    
 };
 
 #include "../src/Matrix.tpp"
