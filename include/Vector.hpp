@@ -36,6 +36,7 @@ public:
     T getData(size_t index) const;
     std::vector<T> getData() const;
     void print() const;
+    void print(size_t precision) const;
 
     void setData(const std::vector<T>& toSet, const std::pair<size_t, size_t>& range);
     void setData(T toSet, size_t index);

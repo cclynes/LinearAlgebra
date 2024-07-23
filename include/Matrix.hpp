@@ -53,7 +53,8 @@ public:
         const std::pair<size_t, size_t>& rowRange, 
         size_t col) const;
 
-    void print();
+    void print() const;
+    void print(size_t precision) const;
 
     // methods to set matrix data
     void setData(
@@ -141,11 +142,16 @@ public:
 
     // helper functions to determine matrix properties
     bool isSquare() const;
-    bool isUpperTriangular() const;
-    bool isLowerTriangular() const;
-    bool isUpperHessenberg() const;
-    bool isLowerHessenberg() const;
-    bool isHermitian() const;
+    template<typename U>
+    bool isUpperTriangular(U tol) const;
+    template<typename U>
+    bool isLowerTriangular(U tol) const;
+    template<typename U>
+    bool isUpperHessenberg(U tol) const;
+    template<typename U>
+    bool isLowerHessenberg(U tol) const;
+    template<typename U>
+    bool isHermitian(U tol) const;
     bool diagHasSameSign() const;
     template<typename U>
     bool diagIsNonZero(U tol) const;

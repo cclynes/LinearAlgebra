@@ -143,6 +143,7 @@ protected:
 
     Matrix<double> threeByTwoMat;
     Matrix<double> fourByThreeColRankDeficientMat;
+    Matrix<double> threeByFourRowRankDeficientMat;
     Matrix<double> threeByFour;
 
     Vector<double> twoDimVecOfOnes;
@@ -151,11 +152,13 @@ protected:
     Vector<double> threeDimGenericMultipleForRankDeficientSol;
     Vector<double> fourDimMultipleForThreeByFour;
     Vector<double> fourDimGenericMultipleForThreeByFour;
+    Vector<double> fourDimGenericForThreeByFourTranspose;
 
     Vector<double> threeDimVecSol;
     Vector<double> threeDimVecUnreachable;
     Vector<double> fourDimRankDeficientVecSol;
     Vector<double> threeByFourVecSol;
+    Vector<double> threeByFourTransposeVecSol;
 
     virtual void SetUp() override {
         BaseMatrixFixture::SetUp();
@@ -170,6 +173,7 @@ protected:
             {2.0, -2.0, 4.0},
             {3.0, 3.0, 6.0},
             {4.0, 4.0, 8.0}});
+        threeByFourRowRankDeficientMat = fourByThreeColRankDeficientMat.transpose();
 
         threeByFour = Matrix<double>({
             {7.0, 5.0, -2.0, 0.0},
@@ -181,16 +185,18 @@ protected:
         threeDimMultipleForRankDeficientSol = Vector<double>({1.0, 1.0, 1.0}, false);
         threeDimGenericMultipleForRankDeficientSol = Vector<double>({0.0, 1.0, 1.5}, false);
         fourDimMultipleForThreeByFour = Vector<double>({1.0, -2.0, 1.0, 3.0}, false);
-        fourDimGenericMultipleForThreeByFour = fourDimMultipleForThreeByFour;
+        fourDimGenericMultipleForThreeByFour = Vector<double>({0.659630606860159, -1.62796833773087, 0.738786279683378, 0.0}, false);
+        fourDimGenericForThreeByFourTranspose = Vector<double>({0.0, -2.0, 0.0, 4.0}, false);
 
         threeDimVecSol = Vector<double>(threeByTwoMat * twoDimVecOfOnes);
         threeDimVecUnreachable = Vector<double>({2.0, -1.0, 0.0}, false);
         fourDimRankDeficientVecSol = Vector<double>(fourByThreeColRankDeficientMat * threeDimMultipleForRankDeficientSol);
         threeByFourVecSol = Vector<double>(threeByFour * fourDimMultipleForThreeByFour);
+        threeByFourTransposeVecSol = Vector<double>({12.0, 20.0, 24.0}, false);
     }
 };
 
-TEST_F(MatrixQRFixture, QRWorksWithSquareMatrices) {
+TEST_F(MatrixQRFixture, QRWorks) {
     double tol = 1e-14;
     EXPECT_TRUE(defaultMat.solveQR(defaultVec, 0.0) == defaultVec);
     EXPECT_TRUE(threeByTwoMat.solveQR(threeDimVecSol, tol).isNear(twoDimVecOfOnes, tol));
@@ -198,11 +204,8 @@ TEST_F(MatrixQRFixture, QRWorksWithSquareMatrices) {
 
     // note that calling QR on rank-deficient systems will return a specific solution, not a(n affine) hyperplane
     EXPECT_TRUE(fourByThreeColRankDeficientMat.solveQR(fourDimRankDeficientVecSol, tol).isNear(threeDimGenericMultipleForRankDeficientSol, tol));
-    // EXPECT_TRUE(threeByFour.solveQR(threeByFourVecSol, tol).isNear(fourDimGenericMultipleForThreeByFour, tol));
-    fourByThreeColRankDeficientMat.solveQR(fourDimRankDeficientVecSol, tol).print();
-    threeDimMultipleForRankDeficientSol.print();
-    // threeByFour.solveQR(threeByFourVecSol, tol).print();
-    // fourDimGenericMultipleForThreeByFour.print();
+    EXPECT_TRUE(threeByFour.solveQR(threeByFourVecSol, tol).isNear(fourDimGenericMultipleForThreeByFour, tol));
+    EXPECT_TRUE(threeByFourRowRankDeficientMat.solveQR(threeByFourTransposeVecSol, tol).isNear(fourDimGenericForThreeByFourTranspose, tol));
 }
 
 class MatrixLUFixture : public ::BaseMatrixFixture {

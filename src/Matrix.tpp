@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <iomanip>
 
 // helper function for 2d-vectors to determine if vectors are "empty"
 template<typename T>
@@ -178,10 +179,14 @@ std::vector<std::vector<T>> Matrix<T>::getData(const std::pair<size_t, size_t>& 
 }
 
 template<typename T>
-void Matrix<T>::print() {
+void Matrix<T>::print() const {
+    print(5);
+}
+template<typename T>
+void Matrix<T>::print(size_t precision) const {
     for (size_t i = 0; i < m_rows; i++) {
         for (size_t j = 0; j < m_cols; j++) {
-            std::cout << m_data[i][j] << " ";
+            std::cout << std::setprecision(15) << m_data[i][j] << " ";
         }
         std::cout << std::endl;
     }
@@ -608,14 +613,16 @@ auto Matrix<T>::solveSystem(const Vector<U>& vecB, V tol) const -> Vector<declty
 
 // determines if a square matrix is upper-triangular
 template<typename T>
-bool Matrix<T>::isUpperTriangular() const {
+template<typename U>
+bool Matrix<T>::isUpperTriangular(U tol) const {
+    assertTypesAreArithmetic<U>();
 
-    if (!(isSquare())) {return false;}
+    if (!(isSquare())) {        return false;}
 
     // check that each element below the diagonal is 0
     for (size_t i=0; i<m_rows; i++) {
         for (size_t j=0; j<i; j++) {
-            if (m_data[i][j] != 0) {
+            if (abs(m_data[i][j]) > tol) {
                 return false;
             }
         }
@@ -626,14 +633,16 @@ bool Matrix<T>::isUpperTriangular() const {
 
 // determines if a square matrix is lower-triangular
 template<typename T>
-bool Matrix<T>::isLowerTriangular() const {
+template<typename U>
+bool Matrix<T>::isLowerTriangular(U tol) const {
+    assertTypesAreArithmetic<U>();
 
     if (!(isSquare())) {return false;}
 
     // check that each element above the diagonal is 0
     for (size_t i=0; i<m_rows; i++) {
         for (size_t j=i+1; j<m_rows; j++) {
-            if (m_data[i][j] != 0) {
+            if (abs(m_data[i][j]) > tol) {
                 return false;
             }
         }
@@ -644,14 +653,16 @@ bool Matrix<T>::isLowerTriangular() const {
 
 // determines if a square matrix is upper Hessenberg
 template<typename T>
-bool Matrix<T>::isUpperHessenberg() const {
+template<typename U>
+bool Matrix<T>::isUpperHessenberg(U tol) const {
+    assertTypesAreArithmetic<U>();
 
     if (!(isSquare())) {return false;}
 
     // check that each element below the first subdiagonal is 0
     for (size_t j = 0; j < m_cols; j++) {
         for (size_t i = j+2; i < m_rows; i++) {
-            if (m_data[i][j] != 0.0f) {
+            if (abs(m_data[i][j]) > tol) {
                 return false;
             }
         }
@@ -662,14 +673,16 @@ bool Matrix<T>::isUpperHessenberg() const {
 
 // determines if a square matrix is lower Hessenberg
 template<typename T>
-bool Matrix<T>::isLowerHessenberg() const {
+template<typename U>
+bool Matrix<T>::isLowerHessenberg(U tol) const {
+    assertTypesAreArithmetic<U>();
 
     if (!(isSquare())) {return false;}
 
     // check that each element above the first superdiagonal is 0
     for (size_t i = 0; i < m_rows; i++) {
         for (size_t j = i+2; j < m_cols; j++) {
-            if (m_data[i][j] != 0.0f) {
+            if (abs(m_data[i][j]) > tol) {
                 return false;
             }
         }
@@ -681,13 +694,15 @@ bool Matrix<T>::isLowerHessenberg() const {
 // determines if a square matrix is Hermitian 
 // (to be expanded once complex no. functionality is added)
 template<typename T>
-bool Matrix<T>::isHermitian() const {
+template<typename U>
+bool Matrix<T>::isHermitian(U tol) const {
+    assertTypesAreArithmetic<U>();
 
     if (!(isSquare())) {return false;}
 
     for (size_t i=0; i<m_rows; i++) {
         for (size_t j=0; j<i; j++) {
-            if (m_data[i][j] != m_data[j][i]) {
+            if (abs(m_data[i][j] - m_data[j][i]) > tol) {
                 return false;
             }
         }
@@ -859,13 +874,14 @@ auto Matrix<T>::solveQR(const Vector<U>& vecB, V tol) const -> Vector<decltype(T
 template<typename T>
 template<typename U, typename V>
 auto Matrix<T>::solveQRUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decltype(T{} * U{})> {
-
     if ((m_rows == 0) || (m_cols == 0)) {
         return Vector<T>(0, false);
     }
 
     using common_type = decltype(T{} * 1.0);
     
+    // get QR decomposition
+    // auto decompTuple = (m_rows >= m_cols) ? getQRDecomp(tol) : transpose().getQRDecomp;
     auto decompTuple = getQRDecomp(tol);
     std::vector<Vector<common_type>> householderVecs = std::get<0>(decompTuple);
     Matrix<common_type> R = std::get<1>(decompTuple);
@@ -874,7 +890,12 @@ auto Matrix<T>::solveQRUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decl
 
     // compute cHat, which will take the value Q.transpose() * vecB, where Q is an orthonormal matrix and the product
     // is computed implicitly using the Householder Vectors
-    Vector<common_type> cHat = vecB;
+    Vector<common_type> cHat(vecB.dim(), false);
+
+    size_t maxDim = (m_rows > m_cols) ? m_rows : m_cols;
+    size_t redundantDims = maxDim - rank;
+    Matrix<common_type> RExtracted = Matrix(R.getData({0, rank}, {0, rank}));
+    cHat = vecB;
     for (size_t k = 0; k < rank; k++) {
         // update cHat
         Vector<common_type> cHatDataToGet = Vector(cHat.getData({k, m_rows}));
@@ -882,11 +903,7 @@ auto Matrix<T>::solveQRUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decl
             2 * householderVecs[k] * householderVecs[k].transpose() * cHatDataToGet);
         cHat.setData(cHatDataToSet.getData(), {k, m_rows});
     }
-
-    size_t maxDim = (m_rows > m_cols) ? m_rows : m_cols;
-    size_t redundantDims = maxDim - rank;
     // extract the first m_cols rows of R and cHat, and solve the system using back-substitution
-    Matrix<common_type> RExtracted = Matrix(R.getData({0, rank}, {0, rank}));
     Vector<common_type> c = Vector<common_type>(cHat.getData({0, rank}));
 
     // solve or approximate the solution
@@ -899,10 +916,10 @@ auto Matrix<T>::solveQRUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decl
 
 template<typename T>
 template<typename V>
-// when called on a non-empty, overdetermined Matrix, returns 
+// when called on a non-empty, overdetermined Matrix, returns relevant components of QR decomposition
 auto Matrix<T>::getQRDecomp(V tol) const 
     -> std::tuple<std::vector<Vector<decltype(T{} * 1.0)>>, Matrix<decltype(T{} * 1.0)>, std::vector<size_t>, size_t> {
-    
+
     size_t rank = 0;
 
     using common_type = decltype(T{} * 1.0);
@@ -945,7 +962,8 @@ auto Matrix<T>::getQRDecomp(V tol) const
         pivotTracker[maxNormCol] = colIndex;
 
         // compute vectors
-        Vector<common_type> yVec = Vector(R.getData({k, m_rows}, k));
+        Vector<common_type> yVec = Vector<common_type>(R.getData({k, m_rows}, k));
+        if (yVec.isRow()) {yVec = yVec.transpose();}; // transpose if is row vec, which can happen with 1x1 data
         int sign_y = (yVec.getData(0) > 0) ? 1 : -1; // note that yVec[0] will always be accessible since we assume m_rows > m_cols
 
         // create first basis vector with the same dimension as yVec
@@ -958,6 +976,7 @@ auto Matrix<T>::getQRDecomp(V tol) const
         if (vkNorm > tol) { // you seriously need to stop using a constant tolerance for all your operations. this should depend directly on accumulated error
             vk = vk * (1 / vkNorm); // normalize - YOU NEED TO WRITE A SCALAR DIVISION OPERATOR FOR VECTORS AND MATRICES
         }
+
         householderVecs[k] = vk; // save
         // update R - this update involves a ton of flip-flop typecasting and needs to be streamlined, probably with the help of an additional data accessor member function
         Matrix dataToGet(R.getData({k, m_rows}, {k, m_cols}));
@@ -1054,7 +1073,7 @@ auto Matrix<T>::solveBackSub(const Vector<U>& vecB, V tol) const -> Vector<declt
     assertTypesAreArithmetic<V>();
     assertCanFormSystemWith(vecB);
     
-    if (!isUpperTriangular()) {
+    if (!isUpperTriangular(tol)) {
         throw std::invalid_argument("Matrix must be upper-triangular to perform back substitution.");
     }
     return solveBackSubUnsafe(vecB, tol);   
@@ -1096,7 +1115,7 @@ auto Matrix<T>::solveForwardSub(const Vector<U>& vecB, V tol) const -> Vector<de
     assertTypesAreArithmetic<V>();
     assertCanFormSystemWith(vecB);
 
-    if (!isLowerTriangular()) {
+    if (!isLowerTriangular(tol)) {
         throw std::invalid_argument("Matrix must be lower-triangular to perform forward substitution.");
     }
     return solveForwardSubUnsafe(vecB, tol);

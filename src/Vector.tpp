@@ -6,6 +6,7 @@
 #include <numeric>
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 // default constructor
 template<typename T>
@@ -123,9 +124,13 @@ std::vector<T> Vector<T>::getData() const {
 
 template<typename T>
 void Vector<T>::print() const {
+    print(5);
+}
 
+template<typename T>
+void Vector<T>::print(size_t precision) const {
     for (size_t i=0; i < m_dim; i++) {
-        std::cout << m_data[i] << " ";
+        std::cout << std::setprecision(precision) << m_data[i] << " ";
         if (!m_is_row) {std::cout << endl;}
     }
 }
