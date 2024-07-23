@@ -143,14 +143,19 @@ protected:
 
     Matrix<double> threeByTwoMat;
     Matrix<double> fourByThreeColRankDeficientMat;
+    Matrix<double> threeByFour;
 
     Vector<double> twoDimVecOfOnes;
     Vector<double> twoDimMultipleForProjectedSol;
-    Vector<double> threeDimVecOfOnes;
+    Vector<double> threeDimMultipleForRankDeficientSol;
+    Vector<double> threeDimGenericMultipleForRankDeficientSol;
+    Vector<double> fourDimMultipleForThreeByFour;
+    Vector<double> fourDimGenericMultipleForThreeByFour;
 
     Vector<double> threeDimVecSol;
     Vector<double> threeDimVecUnreachable;
     Vector<double> fourDimRankDeficientVecSol;
+    Vector<double> threeByFourVecSol;
 
     virtual void SetUp() override {
         BaseMatrixFixture::SetUp();
@@ -166,13 +171,22 @@ protected:
             {3.0, 3.0, 6.0},
             {4.0, 4.0, 8.0}});
 
+        threeByFour = Matrix<double>({
+            {7.0, 5.0, -2.0, 0.0},
+            {2.0, 12.0, 3.0, 1.0},
+            {-2.0, 15.0, 1.0, 2.0}});
+
         twoDimVecOfOnes = Vector<double>({1.0, 1.0}, false);
         twoDimMultipleForProjectedSol = Vector<double>({0.6, -0.2}, false);
-        threeDimVecOfOnes = Vector<double>({1.0, 1.0, 1.0}, false);
+        threeDimMultipleForRankDeficientSol = Vector<double>({1.0, 1.0, 1.0}, false);
+        threeDimGenericMultipleForRankDeficientSol = Vector<double>({0.0, 1.0, 1.5}, false);
+        fourDimMultipleForThreeByFour = Vector<double>({1.0, -2.0, 1.0, 3.0}, false);
+        fourDimGenericMultipleForThreeByFour = fourDimMultipleForThreeByFour;
 
         threeDimVecSol = Vector<double>(threeByTwoMat * twoDimVecOfOnes);
         threeDimVecUnreachable = Vector<double>({2.0, -1.0, 0.0}, false);
-        fourDimRankDeficientVecSol = Vector<double>(fourByThreeColRankDeficientMat * threeDimVecOfOnes);
+        fourDimRankDeficientVecSol = Vector<double>(fourByThreeColRankDeficientMat * threeDimMultipleForRankDeficientSol);
+        threeByFourVecSol = Vector<double>(threeByFour * fourDimMultipleForThreeByFour);
     }
 };
 
@@ -181,7 +195,14 @@ TEST_F(MatrixQRFixture, QRWorksWithSquareMatrices) {
     EXPECT_TRUE(defaultMat.solveQR(defaultVec, 0.0) == defaultVec);
     EXPECT_TRUE(threeByTwoMat.solveQR(threeDimVecSol, tol).isNear(twoDimVecOfOnes, tol));
     EXPECT_TRUE(threeByTwoMat.solveQR(threeDimVecUnreachable, tol).isNear(twoDimMultipleForProjectedSol, tol));
-    // EXPECT_TRUE(fourByThreeColRankDeficientMat.solveQR(fourDimRankDeficientVecSol, tol).isNear(threeDimVecOfOnes, tol));
+
+    // note that calling QR on rank-deficient systems will return a specific solution, not a(n affine) hyperplane
+    EXPECT_TRUE(fourByThreeColRankDeficientMat.solveQR(fourDimRankDeficientVecSol, tol).isNear(threeDimGenericMultipleForRankDeficientSol, tol));
+    // EXPECT_TRUE(threeByFour.solveQR(threeByFourVecSol, tol).isNear(fourDimGenericMultipleForThreeByFour, tol));
+    fourByThreeColRankDeficientMat.solveQR(fourDimRankDeficientVecSol, tol).print();
+    threeDimMultipleForRankDeficientSol.print();
+    // threeByFour.solveQR(threeByFourVecSol, tol).print();
+    // fourDimGenericMultipleForThreeByFour.print();
 }
 
 class MatrixLUFixture : public ::BaseMatrixFixture {
