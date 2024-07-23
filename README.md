@@ -1,8 +1,6 @@
 ## LinearAlgebra: Intro
 
-I wrote this linear algebra program to get familiar with C++ and touch up on some computational linear algebra. It accounts for some basic properties of vectors and matrices, can perform basic operations between those objects, and can solve systems of linear equations using back- and forward-substitution, QR-decomposition, LU-decomposition, and Cholesky decomposition. QR decomposition does not currently support underdetermined systems or rank calculation; both of these aren't far off. Nor does it support eigenvalue/eigenvector operations or error estimation; both of these are features I want to add, but only after taking stock of the program's structure and reorganizing to make better use of the object-orientedness of C++.
-
-I think the project is in a pretty rough state — I don’t really make use of the system-level access that C++ provides, nor do I employ the object-oriented paradigm to any great effect. There’s a lot to be improved in the next few months.
+I wrote this linear algebra program to get familiar with C++ and touch up on some computational linear algebra. It accounts for some basic properties of vectors and matrices, can perform basic operations between those objects, and can solve systems of linear equations using back- and forward-substitution, QR-decomposition, LU-decomposition, and Cholesky decomposition. QR decomposition does not currently support underdetermined systems or rank calculation; both of these aren't far off. Nor does it support eigenvalue/eigenvector operations or error estimation; both of these are features I want to add, but only after taking stock of the program's structure and reorganizing to make better use of the object-orientedness of C++. There’s a lot to be improved in the next few months.
 
 ## Organization
 
