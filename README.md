@@ -34,6 +34,7 @@ The following is a running list of some things I need to take care of, in no par
 - Add eigenvector/eigenvalue functionality
 - Test rank calculation
 - Add an inverse function, probably using QR
+- Test with valgrind
 - Make a simple data accessor method that returns a vector/matrix and allows pythonic, list-like selection of data (i.e. add subscript operators that support either arithmetic types or pairs of arithmetic types)
 - Look into conforming to BLAS and LAPACK
 - Test typecasting
