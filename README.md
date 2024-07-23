@@ -1,6 +1,6 @@
 ## LinearAlgebra: Intro
 
-I wrote this linear algebra program to get familiar with C++ and touch up on some computational linear algebra. It accounts for some basic properties of vectors and matrices, can perform basic operations between those objects, and can solve systems of linear equations using back- and forward-substitution, QR-decomposition, LU-decomposition, and Cholesky decomposition. QR decomposition does not currently support underdetermined or rank-deficient systems, or rank calculation; all three of these aren't far off. Nor does it support eigenvalue/eigenvector operations or error estimation; both of these are features I want to add, but only after taking stock of the program's structure and reorganizing to make better use of the object-orientedness of C++.
+I wrote this linear algebra program to get familiar with C++ and touch up on some computational linear algebra. It accounts for some basic properties of vectors and matrices, can perform basic operations between those objects, and can solve systems of linear equations using back- and forward-substitution, QR-decomposition, LU-decomposition, and Cholesky decomposition. QR decomposition does not currently support underdetermined systems, or rank calculation; all three of these aren't far off. Nor does it support eigenvalue/eigenvector operations or error estimation; both of these are features I want to add, but only after taking stock of the program's structure and reorganizing to make better use of the object-orientedness of C++.
 
 I think the project is in a pretty rough state — I don’t really make use of the system-level access that C++ provides, nor do I employ the object-oriented paradigm to any great effect. There’s a lot to be improved in the next few months.
 
@@ -33,7 +33,7 @@ The following is a running list of some things I need to take care of, in no par
 
 - Separate out the functions for returning a decomposition (e.g. LU, QR) and the functions for solving systems using that decomposition
     - Create structures or classes for decompositions to allow for easy access and abstract system-solving functionality.
-- Add QR functionality for underdetermined (easy) and rank-deficient (slightly harder) systems
+- Add QR functionality for underdetermined systems
 - Add eigenvector/eigenvalue functionality
 - Add rank calculation
 - Add an inverse function, probably using QR
