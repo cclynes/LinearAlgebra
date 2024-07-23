@@ -16,14 +16,14 @@ Since this is intended as a library, I'd like to wrap it in a namespace; I just 
 
 ## Building
 This project uses CMake as its build system. To build using CMake, navigate to the project directory and run the following terminal commands:
-mkdir build
-cd build
-cmake ..
-make
+- mkdir build
+- cd build
+- cmake ..
+- make
 
 ## Running
 There's not much to run right now except tests. To run tests:
-./runTests
+- ./runTests
 
 ## To do
 
