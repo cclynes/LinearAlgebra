@@ -859,102 +859,114 @@ auto Matrix<T>::solveQR(const Vector<U>& vecB, V tol) const -> Vector<decltype(T
 template<typename T>
 template<typename U, typename V>
 auto Matrix<T>::solveQRUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decltype(T{} * U{})> {
-    size_t rank = 0;
 
     if ((m_rows == 0) || (m_cols == 0)) {
         return Vector<T>(0, false);
     }
 
-    if (m_rows >= m_cols) {
-        
-        using common_type = decltype(T{} * U{});
-        // initialize copy of given matrix in order to modify data
-        Matrix<common_type> R(m_data);
-        // initialize std::vector of Householder Vectors
-        std::vector<Vector<common_type>> householderVecs(m_cols);
-        // initalize cHat, which will eventually take the value Q.transpose() * vecB, where Q is an orthonormal matrix and the product
-        // is computed implicitly using the Householder Vectors
-        Vector<common_type> cHat = vecB;
-        // initialize pivot tracker
-        std::vector<size_t> pivotTracker(m_cols);
-        std::iota(pivotTracker.begin(), pivotTracker.end(), 0);
+    using common_type = decltype(T{} * 1.0);
+    
+    auto decompTuple = getQRDecomp(tol);
+    std::vector<Vector<common_type>> householderVecs = std::get<0>(decompTuple);
+    Matrix<common_type> R = std::get<1>(decompTuple);
+    std::vector<size_t> pivotTracker = std::get<2>(decompTuple);
+    size_t rank = std::get<3>(decompTuple);
 
-        // reduce R to upper-triangular form
-        for (size_t k = 0; k < m_cols; k++) {
-
-            // compute greatest norm in the sub-matrix being considered
-            T maxNorm = 0.0;
-            size_t maxNormCol = 0;
-            for (size_t i = k; i < m_cols; i++) {
-                Vector<T> colAsVector(R.getData({k, m_rows}, i));
-                T colNorm = colAsVector.norm();
-                
-                if (colNorm > maxNorm) {
-                    maxNorm = colNorm;
-                    maxNormCol = i;
-                }
-            }
-
-            // break if all remaining norms are 0 (within the tolerance)
-            if (abs(maxNorm) < tol) {
-                break;
-            }
-
-            rank += 1; // increment rank since there are more linearly independent columns
-
-            // swap the current column with the column with the greatest norm 
-            R.interchange({k, maxNormCol}, 1);
-            size_t colIndex = pivotTracker[k];
-            pivotTracker[k] = pivotTracker[maxNormCol];
-            pivotTracker[maxNormCol] = colIndex;
-
-            // compute vectors
-            Vector<common_type> yVec = Vector(R.getData({k, m_rows}, k));
-            int sign_y = (yVec.getData(0) > 0) ? 1 : -1; // note that yVec[0] will always be accessible since we assume m_rows > m_cols
-
-            // create first basis vector with the same dimension as yVec
-            Vector<common_type> e1 = Vector(std::vector<common_type>(m_rows - k), false);
-            e1.setData(common_type(1.0), 0);
-
-            // calculate and normalize k-th Householder Vector
-            Vector<common_type> vk = yVec + (sign_y * yVec.norm() * e1); // calculate
-            common_type vkNorm = vk.norm();
-            if (vkNorm > tol) { // you seriously need to stop using a constant tolerance for all your operations. this should depend directly on accumulated error
-                vk = vk * (1 / vkNorm); // normalize - YOU NEED TO WRITE A SCALAR DIVISION OPERATOR FOR VECTORS AND MATRICES
-            }
-            householderVecs[k] = vk; // save
-            // update R - this update involves a ton of flip-flop typecasting and needs to be streamlined, probably with the help of an additional data accessor member function
-            Matrix dataToGet(R.getData({k, m_rows}, {k, m_cols}));
-            Matrix dataToSet = dataToGet - (2 * vk * vk.transpose() * Matrix(dataToGet));
-            R.setData(dataToSet.getData(), {k, m_rows}, {k, m_cols});
-
-            // update cHat
-            Vector<common_type> cHatDataToGet = Vector(cHat.getData({k, m_rows}));
-            Vector<common_type> cHatDataToSet = cHatDataToGet - Vector(2 * vk * vk.transpose() * cHatDataToGet);
-            cHat.setData(cHatDataToSet.getData(), {k, m_rows});
-        }
-
-        size_t maxDim = (m_rows > m_cols) ? m_rows : m_cols;
-        size_t redundantDims = maxDim - rank;
-
-        // extract the first m_cols rows of R and cHat, and solve the system using back-substitution
-        Matrix<common_type> RExtracted = Matrix(R.getData({0, rank}, {0, rank}));
-        Vector<common_type> c = Vector<common_type>(cHat.getData({0, rank}));
-
-        // solve or approximate the solution
-        Vector<decltype(U{} * T{})> fullRankSol = RExtracted.solveBackSub(c, tol); // you should actually calculate different tolerances depending on the floating-point error of the accumulated calculations
-        Vector<decltype(U{} * T{})> sol(m_cols, false);
-        sol.setData(fullRankSol.getData(), {0, rank});
-        sol.scramble(pivotTracker); // since pivoting produced a column permutation, permute the solution before returning
-        return sol;
+    // compute cHat, which will take the value Q.transpose() * vecB, where Q is an orthonormal matrix and the product
+    // is computed implicitly using the Householder Vectors
+    Vector<common_type> cHat = vecB;
+    for (size_t k = 0; k < rank; k++) {
+        // update cHat
+        Vector<common_type> cHatDataToGet = Vector(cHat.getData({k, m_rows}));
+        Vector<common_type> cHatDataToSet = cHatDataToGet - Vector(
+            2 * householderVecs[k] * householderVecs[k].transpose() * cHatDataToGet);
+        cHat.setData(cHatDataToSet.getData(), {k, m_rows});
     }
 
-    else {
-        Vector<decltype(T{} * U{})> transposeSol = transpose().solveQRUnsafe(vecB, tol);
-        return operator*(transposeSol);
-    }
+    size_t maxDim = (m_rows > m_cols) ? m_rows : m_cols;
+    size_t redundantDims = maxDim - rank;
+    // extract the first m_cols rows of R and cHat, and solve the system using back-substitution
+    Matrix<common_type> RExtracted = Matrix(R.getData({0, rank}, {0, rank}));
+    Vector<common_type> c = Vector<common_type>(cHat.getData({0, rank}));
+
+    // solve or approximate the solution
+    Vector<decltype(U{} * T{})> fullRankSol = RExtracted.solveBackSub(c, tol); // you should actually calculate different tolerances depending on the floating-point error of the accumulated calculations
+    Vector<decltype(U{} * T{})> sol(m_cols, false);
+    sol.setData(fullRankSol.getData(), {0, rank});
+    sol.scramble(pivotTracker); // since pivoting produced a column permutation, permute the solution before returning
+    return sol;
 }
 
+template<typename T>
+template<typename V>
+// when called on a non-empty, overdetermined Matrix, returns 
+auto Matrix<T>::getQRDecomp(V tol) const 
+    -> std::tuple<std::vector<Vector<decltype(T{} * 1.0)>>, Matrix<decltype(T{} * 1.0)>, std::vector<size_t>, size_t> {
+    
+    size_t rank = 0;
+
+    using common_type = decltype(T{} * 1.0);
+    // initialize copy of given matrix in order to modify data
+    Matrix<common_type> R(m_data);
+    // initialize std::vector of Householder Vectors
+    std::vector<Vector<common_type>> householderVecs(m_cols);
+    
+    // initialize pivot tracker
+    std::vector<size_t> pivotTracker(m_cols);
+    std::iota(pivotTracker.begin(), pivotTracker.end(), 0);
+
+    // reduce R to upper-triangular form
+    for (size_t k = 0; k < m_cols; k++) {
+
+        // compute greatest norm in the sub-matrix being considered
+        T maxNorm = 0.0;
+        size_t maxNormCol = 0;
+        for (size_t i = k; i < m_cols; i++) {
+            Vector<T> colAsVector(R.getData({k, m_rows}, i));
+            T colNorm = colAsVector.norm();
+            
+            if (colNorm > maxNorm) {
+                maxNorm = colNorm;
+                maxNormCol = i;
+            }
+        }
+
+        // break if all remaining norms are 0 (within the tolerance)
+        if (abs(maxNorm) < tol) {
+            break;
+        }
+
+        rank += 1; // increment rank since there are more linearly independent columns
+
+        // swap the current column with the column with the greatest norm 
+        R.interchange({k, maxNormCol}, 1);
+        size_t colIndex = pivotTracker[k];
+        pivotTracker[k] = pivotTracker[maxNormCol];
+        pivotTracker[maxNormCol] = colIndex;
+
+        // compute vectors
+        Vector<common_type> yVec = Vector(R.getData({k, m_rows}, k));
+        int sign_y = (yVec.getData(0) > 0) ? 1 : -1; // note that yVec[0] will always be accessible since we assume m_rows > m_cols
+
+        // create first basis vector with the same dimension as yVec
+        Vector<common_type> e1 = Vector(std::vector<common_type>(m_rows - k), false);
+        e1.setData(common_type(1.0), 0);
+
+        // calculate and normalize k-th Householder Vector
+        Vector<common_type> vk = yVec + (sign_y * yVec.norm() * e1); // calculate
+        common_type vkNorm = vk.norm();
+        if (vkNorm > tol) { // you seriously need to stop using a constant tolerance for all your operations. this should depend directly on accumulated error
+            vk = vk * (1 / vkNorm); // normalize - YOU NEED TO WRITE A SCALAR DIVISION OPERATOR FOR VECTORS AND MATRICES
+        }
+        householderVecs[k] = vk; // save
+        // update R - this update involves a ton of flip-flop typecasting and needs to be streamlined, probably with the help of an additional data accessor member function
+        Matrix dataToGet(R.getData({k, m_rows}, {k, m_cols}));
+        Matrix dataToSet = dataToGet - (2 * vk * vk.transpose() * Matrix(dataToGet));
+        R.setData(dataToSet.getData(), {k, m_rows}, {k, m_cols});
+    }
+
+    return std::tuple<std::vector<Vector<common_type>>, Matrix<common_type>, std::vector<size_t>, size_t>{householderVecs, R, pivotTracker, rank};
+}
 
 template<typename T>
 template<typename U, typename V>

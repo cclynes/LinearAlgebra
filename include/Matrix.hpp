@@ -175,7 +175,11 @@ private:
     auto solveForwardSubUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decltype(T{} * U{})>;
     template<typename U, typename V>
     auto solveCholeskyUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decltype(T{} * U{})>;
-    
+
+    // helper function to return R during QR factorization using Householder vectors
+    template<typename V>
+    auto getQRDecomp(V tol) const 
+        -> std::tuple<std::vector<Vector<decltype(T{} * 1.0)>>, Matrix<decltype(T{} * 1.0)>, std::vector<size_t>, size_t>;
 };
 
 #include "../src/Matrix.tpp"
