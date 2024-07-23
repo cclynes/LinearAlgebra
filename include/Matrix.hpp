@@ -164,6 +164,9 @@ public:
     // function to scramble the rows/columns of a matrix according to the given index vector
     void scramble(const std::vector<size_t>& indices, size_t index);
 
+    // method to compute rank
+    size_t rank() const;
+
 private:
     // variables to hold matrix dimensions and data
     size_t m_rows;

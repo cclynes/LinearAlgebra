@@ -117,6 +117,12 @@ std::pair<size_t, size_t> Matrix<T>::getDims() const {
     return dims;
 }
 
+template<typename T>
+size_t Matrix<T>::rank() const {
+    auto decompTuple = getQRDecomp(1e-6);
+    return std::get<3>(decompTuple);
+}
+
 // method to retrieve matrix data
 template<typename T>
 std::vector<std::vector<T>> Matrix<T>::getData(
@@ -881,7 +887,6 @@ auto Matrix<T>::solveQRUnsafe(const Vector<U>& vecB, V tol) const -> Vector<decl
     using common_type = decltype(T{} * 1.0);
     
     // get QR decomposition
-    // auto decompTuple = (m_rows >= m_cols) ? getQRDecomp(tol) : transpose().getQRDecomp;
     auto decompTuple = getQRDecomp(tol);
     std::vector<Vector<common_type>> householderVecs = std::get<0>(decompTuple);
     Matrix<common_type> R = std::get<1>(decompTuple);
