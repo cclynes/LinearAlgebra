@@ -1,12 +1,12 @@
 ## LinearAlgebra: Intro
 
-I wrote this linear algebra program to get familiar with C++ and touch up on some computational linear algebra. It accounts for some basic properties of vectors and matrices, can perform basic operations between those objects, and can solve systems of linear equations using back- and forward-substitution, QR-decomposition, LU-decomposition, and Cholesky decomposition. QR decomposition does not currently support underdetermined systems or rank calculation; both of these aren't far off. Nor does it support eigenvalue/eigenvector operations or error estimation; both of these are features I want to add, but only after taking stock of the program's structure and reorganizing to make better use of the object-orientedness of C++. There’s a lot to be improved.
+I wrote this linear algebra program to get familiar with C++ and touch up on some computational linear algebra. It accounts for some basic properties of vectors and matrices, can perform basic operations between those objects, and can solve systems of linear equations using back- and forward-substitution, QR-decomposition, LU-decomposition, and Cholesky decomposition. The library does not currently support eigenvalue/eigenvector operations or error estimation; both of these are features I want to add, but only after taking stock of the program's structure and reorganizing to make better use of the object-orientedness of C++. There’s a lot to be improved.
 
 ## Organization
 
 There are two main template classes, Matrix and Vector. Member functions for each are declared in header files and defined in tpp files which are included in the headers to adhere to best practices for template classes (or at least, my understanding of best practices). I probably need more classes for specific kinds of vectors and matrices and to manage some operations between them, but with no object-oriented programming experience, I want to learn more before setting out to reorganize with no clear direction.
 
-Basic member functions like getData, setData, transpose(), etc. are fairly self-explanatory from their definitions. System-solving functions are members of the Matrix class, and are called on a Matrix given a vector input and a tolerance, which is a rudimentary measure of tolerable error.
+Basic member functions like getData, setData, transpose(), etc. are fairly self-explanatory from their definitions. System-solving functions are members of the Matrix class, and are called on a Matrix given a vector input and a tolerance, the level of user-tolerated error. (Tolerance specifications are currently rudimentary; I'd like to flesh this out with error estimation.)
 
 This project uses gtest as its testing framework. Test folders correspond to class, and each contains tests for basic member functions and operations. Additional Matrix testing files test the member functions that check Matrix properties and solve systems of equations. With the exception of a few Vector constructor tests that I still need to update, all tests use test fixtures for consistency's sake. Base fixtures are located outside of files in the class testing folders.
 
@@ -31,9 +31,8 @@ The following is a running list of some things I need to take care of, in no par
 
 - Separate out the functions for returning a decomposition (e.g. LU, QR) and the functions for solving systems using that decomposition
     - Create structures or classes for decompositions to allow for easy access and abstract system-solving functionality.
-- Add QR functionality for underdetermined systems
 - Add eigenvector/eigenvalue functionality
-- Add rank calculation
+- Test rank calculation
 - Add an inverse function, probably using QR
 - Make a simple data accessor method that returns a vector/matrix and allows pythonic, list-like selection of data (i.e. add subscript operators that support either arithmetic types or pairs of arithmetic types)
 - Look into conforming to BLAS and LAPACK
