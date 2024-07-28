@@ -12,7 +12,7 @@ This project uses gtest as its testing framework. Test folders correspond to cla
 
 ## Priorities
 
-Since this is intended as a library, I'd like to wrap it in a namespace; I just can't get this to work without defining friend functions directly in the header files. After reorganization, adding robust error estimation and tolerance calculation given types and floating point operations is a major priority. Exploiting C++'s systems-level features to optimize FLOPS and make the library fast is the other major priority.
+After reorganization, adding robust error estimation and tolerance calculation given types and floating point operations is a major priority. Exploiting C++'s systems-level features to optimize FLOPS and make the library fast is the other major priority.
 
 ## Building
 This project uses CMake as its build system. To build using CMake, navigate to the project directory and run the following terminal commands:
