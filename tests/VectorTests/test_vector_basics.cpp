@@ -5,6 +5,7 @@
 #include "BaseVectorFixture.hpp"
 
 using ::testing::ContainerEq;
+using namespace LinearAlgebra;
 
 // Test Vector constructors
 // These tests won't pass if getData, dim, or isRow are broken.

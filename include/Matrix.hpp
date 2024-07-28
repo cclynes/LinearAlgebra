@@ -6,6 +6,8 @@
 #include <vector>
 #include <functional>
 
+namespace LinearAlgebra {
+
 template<typename T>
 class Vector;
 
@@ -190,6 +192,8 @@ private:
     auto getQRDecomp(V tol) const 
         -> std::tuple<std::vector<Vector<decltype(T{} * 1.0)>>, Matrix<decltype(T{} * 1.0)>, std::vector<size_t>, size_t>;
 };
+
+} // namespace LinearAlgebra
 
 #include "../src/Matrix.tpp"
 

@@ -5,6 +5,7 @@
 #include "BaseMatrixFixture.hpp"
 
 using ::testing::ContainerEq;
+using namespace LinearAlgebra;
 
 // doesn't inherit; redundant declarations are made for readability's sake
 class MatrixOpsFixture : public ::testing::Test {

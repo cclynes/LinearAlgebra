@@ -6,6 +6,8 @@
 #include "gtest/gtest.h"
 #include <random>
 
+using namespace LinearAlgebra;
+
 // base fixture to define matrices that are common among many tests
 class BaseMatrixFixture : public ::testing::Test {
 protected:

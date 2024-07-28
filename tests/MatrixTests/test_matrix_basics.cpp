@@ -6,6 +6,7 @@
 #include "BaseMatrixFixture.hpp"
 
 using ::testing::ContainerEq;
+using namespace LinearAlgebra;
 
 class MatrixConstructorFixture : public :: BaseMatrixFixture {
 protected:

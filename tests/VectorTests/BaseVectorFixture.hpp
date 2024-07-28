@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include "../../include/Vector.hpp"
 
+using namespace LinearAlgebra;
 
 class BaseVectorFixture : public ::testing::Test {
 protected:

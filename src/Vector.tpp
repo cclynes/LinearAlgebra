@@ -8,6 +8,8 @@
 #include <vector>
 #include <iomanip>
 
+namespace LinearAlgebra {
+
 // default constructor
 template<typename T>
 Vector<T>::Vector()
@@ -437,3 +439,5 @@ T Vector<T>::norm() const {
             return acc + static_cast<long double>(val) * static_cast<long double>(val);
     }));
 }
+
+} // namespace LinearAlgebra

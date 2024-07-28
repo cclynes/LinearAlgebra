@@ -9,6 +9,8 @@
 #include <memory>
 #include <iomanip>
 
+namespace LinearAlgebra {
+
 // helper function for 2d-vectors to determine if vectors are "empty"
 template<typename T>
 bool isEmpty(const std::vector<std::vector<T>>& vec) {
@@ -1205,3 +1207,4 @@ auto Matrix<T>::solveCholeskyUnsafe(const Vector<U>& vecB, V tol) const -> Vecto
     Vector<common_type> solution = L.transpose().solveBackSubUnsafe(vecY, tol);
     return solution;
 }
+} // namespace LinearAlgebra

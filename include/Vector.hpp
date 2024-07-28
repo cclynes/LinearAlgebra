@@ -6,6 +6,8 @@
 using namespace std;
 #include <vector>
 
+namespace LinearAlgebra {
+
 template<typename T>
 class Matrix;
 
@@ -105,6 +107,8 @@ private:
     std::vector<T> m_data;
 
 };
+
+} // namespace LinearAlgebra
 
 #include "../src/Vector.tpp"
 

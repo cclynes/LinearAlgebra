@@ -7,6 +7,7 @@
 #include <iostream>
 
 using ::testing::ContainerEq;
+using namespace LinearAlgebra;
 
 TEST_F(BaseVectorFixture, IsRowWorks) {
     EXPECT_FALSE(defaultVec.isRow());
