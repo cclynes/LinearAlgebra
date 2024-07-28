@@ -606,7 +606,7 @@ auto Matrix<T>::solveSystem(const Vector<U>& vecB, V tol) const -> Vector<declty
 
     // use QR decomposition if matrix is not square
     if (m_rows != m_cols) {
-        // return solveQRUnsafe(vecB, tol);
+        return solveQRUnsafe(vecB, tol);
     }
 
     // use forward- or back-substition if matrix is triangular
