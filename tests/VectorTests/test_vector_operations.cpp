@@ -200,7 +200,7 @@ TEST_F(VectorMultFixture, ScalarVectorMultiplicationWorks) {
     EXPECT_EQ(defaultVec.getData(), (defaultVec * -325.1).getData());
 
     Vector<double> newFourEltRowVec = fourEltRowVec1 * 2.5;
-    vector<double> expectedData = {2.5, 5.0, 7.5, 10.0};
+    std::vector<double> expectedData = {2.5, 5.0, 7.5, 10.0};
     EXPECT_EQ(expectedData, newFourEltRowVec.getData());
 }
 

@@ -27,7 +27,7 @@ protected:
         empty2DVecData = {{}};
         singleEltVecData = {{3.71}};
         squareVecData = {{4.0, 2.5, 9401.42}, {525.0, -34.9, 0.0}, {0.2, -90.9, 42.4}};
-        largeVecData = std::vector<std::vector<double>>(85, vector<double>(31, 2.7f));
+        largeVecData = std::vector<std::vector<double>>(85, std::vector<double>(31, 2.7f));
 
         emptyVec = Vector<double>(emptyVecData);
         singleEltVec = Vector<double>(singleEltVec);

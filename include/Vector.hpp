@@ -3,7 +3,6 @@
 
 #include "Matrix.hpp"
 #include "Utility.hpp"
-using namespace std;
 #include <vector>
 
 namespace LinearAlgebra {
@@ -22,7 +21,7 @@ public:
     Vector(const std::vector<T>& vec, bool isRow=false);
 
     // constructor for 2d argument
-    Vector(const std::vector<vector<T>>& vec);
+    Vector(const std::vector<std::vector<T>>& vec);
 
     // constructor for dimensional input
     Vector(size_t dim, bool isRow);

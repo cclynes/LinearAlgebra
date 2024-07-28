@@ -60,7 +60,7 @@ Vector<T>::Vector(const std::vector<std::vector<T>>& vec) {
 // dimensional constructor
 template<typename T>
 Vector<T>::Vector(size_t dim, bool isRow)
-    : Vector(vector<T>(dim, 0.0), isRow) {
+    : Vector(std::vector<T>(dim, 0.0), isRow) {
         assertTypesAreArithmetic<T>();
     }
 
@@ -105,7 +105,7 @@ std::vector<T> Vector<T>::getData(const std::pair<size_t, size_t>& range) const 
     // return the data
 
     size_t toGetLength = (end >= start) ? (end - start) : 0;
-    vector<T> toGet(toGetLength);
+    std::vector<T> toGet(toGetLength);
 
     for (size_t i = start; i < end; i++) {
         toGet[i - start] = m_data[i];
@@ -133,12 +133,12 @@ template<typename T>
 void Vector<T>::print(size_t precision) const {
     for (size_t i=0; i < m_dim; i++) {
         std::cout << std::setprecision(precision) << m_data[i] << " ";
-        if (!m_is_row) {std::cout << endl;}
+        if (!m_is_row) {std::cout << std::endl;}
     }
 }
 
 template<typename T>
-void Vector<T>::setData(const vector<T>& toSet, const std::pair<size_t, size_t>& range) {
+void Vector<T>::setData(const std::vector<T>& toSet, const std::pair<size_t, size_t>& range) {
     assertTypesAreArithmetic<T>();
 
     size_t start = range.first;
@@ -166,7 +166,7 @@ void Vector<T>::setData(T toSet, size_t index) {
 }
 
 template<typename T>
-void Vector<T>::setData(const vector<T>& toSet) {
+void Vector<T>::setData(const std::vector<T>& toSet) {
     assertTypesAreArithmetic<T>();
     setData({toSet}, {0, m_dim});
 }
@@ -267,7 +267,7 @@ auto Vector<T>::operator+(const Vector<U>& toAdd) const -> Vector<decltype(T{} +
     }
 
     // add the two vectors
-    vector<T> sum(m_data.size());
+    std::vector<T> sum(m_data.size());
 
     for (int i=0; i<m_data.size(); i++) {
         sum[i] = m_data[i] + toAdd.m_data[i];
@@ -285,7 +285,7 @@ auto Vector<T>::operator-(const Vector<U>& toSubtract) const -> Vector<decltype(
     }
 
     // add the two vectors
-    vector<T> diff(m_data.size());
+    std::vector<T> diff(m_data.size());
 
     for (int i=0; i<m_data.size(); i++) {
         diff[i] = m_data[i] - toSubtract.m_data[i];
@@ -353,7 +353,7 @@ auto Vector<T>::operator*(const Vector<U>& toMultiply) const -> Matrix<decltype(
 
     else { // if left vector is a column vector
         if (toMultiply.m_is_row) {
-            std::vector<std::vector<T>> matData(m_dim, vector<T>(toMultiply.m_dim, 0.0f));
+            std::vector<std::vector<T>> matData(m_dim, std::vector<T>(toMultiply.m_dim, 0.0f));
             for (size_t i = 0; i < m_dim; i++) {
                 for (size_t j = 0; j < toMultiply.m_dim; j++) {
                     matData[i][j] = m_data[i]*toMultiply.m_data[j];
@@ -363,7 +363,7 @@ auto Vector<T>::operator*(const Vector<U>& toMultiply) const -> Matrix<decltype(
         }
         else { // if toMultiply is a column vector
             if (toMultiply.m_dim == 1) {
-                std::vector<std::vector<T>> matData(m_dim, vector<T>(1, 0.0f));
+                std::vector<std::vector<T>> matData(m_dim, std::vector<T>(1, 0.0f));
                 for (size_t i = 0; i < m_dim; i++) {
                     matData[i][0] = m_data[i] * toMultiply.m_data[0];
                 }
