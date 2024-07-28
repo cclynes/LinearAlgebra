@@ -103,6 +103,16 @@ TEST_F(MatrixConstructorFixture, VectorConstructorWorks) {
     EXPECT_EQ(singleEltMat.getDims().second, singleEltVecData.size()); 
 }
 
+TEST_F(MatrixConstructorFixture, InitListConstructorWorks) {
+    Matrix<double> emptyMat = {{}};
+    Matrix<double> singleEltMat = {{3.71}};
+    Matrix<double> threeByThreeMat = {{4.0, 2.5, 9401.42}, {525.0, -34.9, 0.0}, {0.2, -90.9, 42.4}};
+
+    EXPECT_EQ(emptyMat.getData(), empty2DVecData);
+    EXPECT_EQ(singleEltMat.getData(), singleEltVecData);
+    EXPECT_EQ(threeByThreeMat.getData(), squareVecData);
+}
+
 TEST_F(MatrixConstructorFixture, MatrixIdentityConstructorWorks) {
     EXPECT_TRUE(Matrix<double>::identity(0) == defaultMat);
 

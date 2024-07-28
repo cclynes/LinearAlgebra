@@ -21,8 +21,11 @@ public:
     // constructor for a rows-by-cols matrix
     Matrix(size_t rows, size_t cols);
 
-    // constructor for a matrix with specified contents
+    // constructor from std::vector
     Matrix(const std::vector<std::vector<T>>& data);
+
+    // constructor from initializer list
+    Matrix(std::initializer_list<std::initializer_list<T>> data);
 
     // constructor that takes a vector argument
     Matrix(const Vector<T>& vec);

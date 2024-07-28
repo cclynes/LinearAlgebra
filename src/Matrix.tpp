@@ -70,6 +70,23 @@ Matrix<T>::Matrix(const std::vector<std::vector<T>>& data) {
 }
 
 template<typename T>
+Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data) {
+    assertTypesAreArithmetic<T>();
+
+    m_rows = data.size();
+    m_cols = (m_rows > 0) ? data.begin()->size() : 0;
+
+    m_data.reserve(m_rows);
+
+    for (const auto& row : data) {
+        if (row.size() != m_cols) {
+            throw std::invalid_argument("Rows must be of equal dimension.");
+        }
+        m_data.push_back(std::vector<T>(row));
+    }
+}
+
+template<typename T>
 Matrix<T>::Matrix(const Vector<T>& vec) {
     assertTypesAreArithmetic<T>();
     size_t dim = vec.dim();
