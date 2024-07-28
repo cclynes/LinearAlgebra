@@ -57,6 +57,51 @@ Vector<T>::Vector(const std::vector<std::vector<T>>& vec) {
     }
 }
 
+// constructor for 1d initializer; note that it will always create a column vector
+template<typename T>
+Vector<T>::Vector(std::initializer_list<T> data)
+    : m_data(std::vector<T>(data)), m_is_row(false), m_dim(data.size()) {
+    assertTypesAreArithmetic<T>();
+}
+/*
+// 2D initializer list constructor
+template<typename T>
+Vector<T>::Vector(std::initializer_list<std::initializer_list<T>> data) {
+    assertTypesAreArithmetic<T>();
+
+    if (data.size() == 0 || data.begin()->size() == 0) {
+        m_data = {};
+        m_dim = 0;
+        m_is_row = false;
+    }
+
+    // Check if it's a row vector
+    else if (data.size() == 1) {
+        m_data = *(data.begin());
+        m_is_row = true;
+        m_dim = m_data.size();
+    }
+
+    else {
+        size_t numCols = data.begin()->size();
+        bool isColumnVector = true;
+        m_data.reserve(data.size());
+        for (auto it = data.begin(); it != data.end(); ++it) {
+            if (it->size() != 1) {
+                isColumnVector = false;
+                break;
+            }
+            m_data.push_back(*(it->begin()));
+        }
+        if (!isColumnVector) {
+            throw std::invalid_argument("2D initializer list must represent a 1-by-n or n-by-1 vector.");
+        }
+        
+        m_is_row = false;
+        m_dim = m_data.size();
+    }
+}
+*/
 // dimensional constructor
 template<typename T>
 Vector<T>::Vector(size_t dim, bool isRow)

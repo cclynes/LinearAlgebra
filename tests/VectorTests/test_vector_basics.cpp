@@ -25,7 +25,7 @@ TEST(VectorConstructorTests, DefaultConstructorWorks) {
 
 TEST(VectorConstructorTests, 1DConstructorWorks) {
     // Create data for 1D vector
-    std::vector<double> vec = {1.0f, 2.0f, 3.0f, 4.0f};
+    std::vector<double> vec = {1.0, 2.0, 3.0, 4.0};
 
     // Construct row vector
     Vector rowVec(vec, true);
@@ -40,9 +40,18 @@ TEST(VectorConstructorTests, 1DConstructorWorks) {
     EXPECT_EQ(colVec.dim(), vec.size());
 }
 
+TEST(VectorConstructorTests, 1DInitializerListConstructorWorks) {
+    std::vector<double> vec = {1.0, 2.0, 3.0, 4.0};
+
+    Vector colVec = {1.0, 2.0, 3.0, 4.0};
+    EXPECT_EQ(colVec.getData({0, 4}), vec);
+    EXPECT_FALSE(colVec.isRow());
+    EXPECT_EQ(colVec.dim(), vec.size());
+}
+
 TEST(VectorConstructorTests, 2DConstructorWorksForColVecs) {
     // Create data for 2D vectors
-    std::vector<std::vector<double>> colVecData = {{1.0f}, {3.0f}, {5.0f}};
+    std::vector<std::vector<double>> colVecData = {{1.0}, {3.0}, {5.0}};
 
     // Construct vector using 2D data
     Vector<double> colVec(colVecData);
