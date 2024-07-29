@@ -14,7 +14,7 @@ This project uses gtest as its testing framework. Test folders correspond to cla
 
 ## Priorities
 
-After reorganization, adding robust error estimation and tolerance calculation given types and floating point operations is the priority. Exploiting some of C++'s systems-level features, optimizing FLOPS, and making the library fast is the other major priority.
+After reorganization, adding robust error estimation and tolerance calculation given types and floating point operations is a main priority. Exploiting some of C++'s systems-level features, optimizing FLOPS, and making the library fast is the other major priority.
 
 ## Building
 This project uses CMake as its build system. To build using CMake, navigate to the project directory and run the following terminal commands:
