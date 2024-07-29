@@ -8,6 +8,8 @@ There are two main template classes, Matrix and Vector. Member functions for eac
 
 Basic member functions like getData, setData, transpose(), etc. are fairly self-explanatory from their definitions. System-solving functions are members of the Matrix class, and are called on a Matrix given a vector input and a tolerance, the level of user-tolerated error. (Tolerance specifications are currently rudimentary; I'd like to flesh this out with error estimation.)
 
+To see some basic use cases in action, check out the examples folder. To print the results, build the project and run the examples (see Building and Running).
+
 This project uses gtest as its testing framework. Test folders correspond to class, and each contains tests for basic member functions and operations. Additional Matrix testing files test the member functions that check Matrix properties and solve systems of equations. With the exception of a few Vector constructor tests that I still need to update, all tests use test fixtures for consistency's sake. Base fixtures are located outside of files in the class testing folders.
 
 ## Priorities
@@ -22,8 +24,10 @@ This project uses CMake as its build system. To build using CMake, navigate to t
 - make
 
 ## Running
-There's not much to run right now except tests. To run tests:
+To run tests:
 - ./runTests
+To run examples:
+- ./runExamples
 
 ## To do
 
