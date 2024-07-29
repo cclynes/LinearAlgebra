@@ -43,7 +43,7 @@ la::Vector<double> sol = threeByThree.solveSystem(threeEltColVec, tol); // where
 
 // we can also solve under- and over-determined systems
 // systems with no solution will yield the least-squares solution
-// systems with many solutions will yield the least-magnitude solution
+// systems with many solutions will yield the basic solution
 
 la::Matrix<double> fourByThree = threeByFour.transpose();
 
