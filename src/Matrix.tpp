@@ -11,7 +11,7 @@
 
 namespace LinearAlgebra {
 
-// helper function for 2d-vectors to determine if vectors are "empty"
+// helper function for 2d-std::vectors to determine if std::vectors are "empty"
 template<typename T>
 bool isEmpty(const std::vector<std::vector<T>>& vec) {
     assertTypesAreArithmetic<T>();
