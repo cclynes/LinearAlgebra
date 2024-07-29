@@ -43,27 +43,22 @@ The following is a running list of some things I need to take care of, in no par
 - Make a simple data accessor method that returns a vector/matrix and allows pythonic, list-like selection of data (i.e. add subscript operators that support either arithmetic types or pairs of arithmetic types)
 - Look into conforming to BLAS and LAPACK
 - Test typecasting
-- Check getData methods, esp. The overloaded ones: these might (?) be malfunctioning when matrices are empty, because they go off m_cols or m_rows or something, but then end up returning an empty vector {} when they should be returning {{}}
+- Check getData methods, esp. the overloaded ones: these might (?) be malfunctioning when matrices are empty, because they go off m_cols or m_rows or something, but then end up returning an empty vector {} when they should be returning {{}}
 - Incorporate type checks into tests
-- Go through and check types - especially make sure iterator variables have type size_t
-- Also check method return types and try to make type assumptions/typecasting easier
-- Check into maybe updating a lot of methods to static methods?
-- Add Vector constructor that just lets you input 1-d list and gives you a column vector
-- Hunt for edge cases, esp. with constructors (e.g. empty args, etc.)
+- Review function return types and try to make type assumptions/typecasting easier
+- Look into maybe updating a lot of methods to static methods?
+- Hunt for edge cases, incl. with constructors (e.g. empty args, etc.)
 - Abstract size/dimension-compatibility checks to helper functions (maybe)
-- Another question to ask: does it actually make sense to allow empty vectors/matrices? Are there practical/theoretical arguments for allowing them?
+- Does it actually make sense to allow empty vectors/matrices? Are there practical/theoretical arguments for allowing them?
 - To test: what happens when you call Matrix(0, 1)? Do we get some sort of error? Guessing not
-- Allow for variable type passing (if possible) to accommodate situations where, for instance, you might want to getData either as a 2d vector or as a float
 - Implement warnings for unstable, “almost singular” matrices
-- Look into memory allocation - maybe arena allocation/memory arenas for objects? Add pointers?
-- Multithreading?
-- Look into preallocated blocks for vectors too, esp. Variable-size vectors, to avoid reallocating all the time
+- Look into memory allocation - maybe arena allocation/memory arenas for objects
+- Add support for multithreading
+- Look into preallocated blocks for vectors too, esp. variable-size vectors, to avoid reallocating all the time
 - Implement Givens rotation for QR-decomposition
-- Add methods to compute tolerance/allowable error
-- Write an algorithm to generate random invertible nxn matrices
-- Go through constructors and make sure all of them define every attribute (this caused problems in LU testing due to issues with MathVector(const Matrix& mat) constructor that were not detected before)
+- Add functions to compute tolerance/allowable error
+- Write a function to generate random invertible nxn matrices
 - Add hessenberg and permutated triangular solvers
-- Clean up fixtures and reorganize a bit - you should maybe make the system solving functions members of classes inheriting from a centralized template class specific to system solving
+- Reorganize a bit - you should maybe make the system solving functions members of classes inheriting from a centralized template class specific to system solving
 - Add function to generate random SPD matrix
-- Build functionality to track floating point error and calculate tolerances
 - Build functionality to measure time-performance
