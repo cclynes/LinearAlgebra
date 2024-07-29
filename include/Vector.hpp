@@ -25,10 +25,7 @@ public:
 
     // constructor that takes a 1d initializer list (will always create a column Vector)
     Vector(std::initializer_list<T> data);
-    /*
-    // constructor that takes a 2d initializer list
-    Vector(std::initializer_list<std::initializer_list<T>> data);
-    */
+
     // constructor for dimensional input
     Vector(size_t dim, bool isRow);
 
