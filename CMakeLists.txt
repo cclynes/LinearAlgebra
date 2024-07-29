@@ -14,8 +14,8 @@ set(CMAKE_PREFIX_PATH "/opt/homebrew")
 find_package(GTest REQUIRED)
 # include_directories(${GTEST_INCLUDE_DIRS})
 
-# Add sources
-set(SOURCES 
+# Add sources for tests
+set(TEST_SOURCES 
     ${CMAKE_SOURCE_DIR}/src/Matrix.tpp
     ${CMAKE_SOURCE_DIR}/src/Vector.tpp
     ${CMAKE_SOURCE_DIR}/tests/MatrixTests/test_matrix_basics.cpp
@@ -27,10 +27,14 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/tests/VectorTests/test_vector_operations.cpp
 )
 
-# Add executable
-add_executable(runTests ${SOURCES})
+# Add sources for examples
+set(EXAMPLE_SOURCES
+    ${CMAKE_SOURCE_DIR}/examples/simple_examples.cpp
+)
 
-# Link executable with required libraries
-target_link_libraries(runTests GTest::GTest GTest::Main pthread)
+add_executable(runTests ${TEST_SOURCES}) # add executable for testing
+target_link_libraries(runTests GTest::GTest GTest::Main pthread) # link with gtest libraries
+target_include_directories(runTests PRIVATE ${GTEST_INCLUDE_DIRS}) # specify include directory
 
-target_include_directories(runTests PRIVATE ${GTEST_INCLUDE_DIRS})
+add_executable(runExamples ${EXAMPLE_SOURCES}) # add executable for examples
+target_include_directories(runTests PRIVATE ${CMAKE_SOURCE_DIR}/include)
