@@ -125,7 +125,8 @@ public:
     void interchange(const std::pair<size_t, size_t>& toSwap, size_t index);
 
     // method to determine whether matrix is symmetric
-    bool isSymmetric() const;
+    template<typename U>
+    bool isSymmetric(U tol) const;
 
     // method to throw exception if matrix and vector cannot form a sytem of equations
     template<typename U>

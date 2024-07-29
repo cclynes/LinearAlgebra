@@ -580,13 +580,15 @@ bool Matrix<T>::isSquare() const {
 
 // method to determine whether matrix is symmetric
 template<typename T>
-bool Matrix<T>::isSymmetric() const {
+template<typename U>
+bool Matrix<T>::isSymmetric(U tol) const {
+    assertTypesAreArithmetic<U>();
     
     if (!(isSquare())) {return false;}
 
     for (size_t i=0; i<m_rows; i++) {
         for (size_t j=0; j<i; j++) {
-            if (m_data[i][j] != m_data[j][i]) {
+            if (abs(m_data[i][j] - m_data[j][i]) > tol) {
                 return false;
             }
         }
@@ -610,11 +612,11 @@ auto Matrix<T>::solveSystem(const Vector<U>& vecB, V tol) const -> Vector<declty
     }
 
     // use forward- or back-substition if matrix is triangular
-    if (isUpperTriangular()) {
+    if (isUpperTriangular(tol)) {
         return solveBackSubUnsafe(vecB, tol);
     }
 
-    if (isLowerTriangular()) {
+    if (isLowerTriangular(tol)) {
         return solveForwardSubUnsafe(vecB, tol);
     }
 
@@ -624,7 +626,7 @@ auto Matrix<T>::solveSystem(const Vector<U>& vecB, V tol) const -> Vector<declty
     }
 
     // if matrix could be symmetric positive-definite, attempt Cholesky decomposition
-    if (isSymmetric() && (m_data[0][0] > 0) && diagHasSameSign()) {
+    if (isSymmetric(tol) && (m_data[0][0] > 0) && diagHasSameSign()) {
         try {
             Vector choleskySol = solveCholeskyUnsafe(vecB, tol);
             return choleskySol;
@@ -1192,7 +1194,7 @@ auto Matrix<T>::solveCholeskyUnsafe(const Vector<U>& vecB, V tol) const -> Vecto
     assertTypesAreArithmetic<V>();
 
     // check that matrix is symmetric
-    if (!isSymmetric()) {
+    if (!isSymmetric(tol)) {
         throw std::invalid_argument("Cholesky decomposition requires a symmetric matrix.");
     }
 

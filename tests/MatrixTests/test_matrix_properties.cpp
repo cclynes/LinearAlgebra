@@ -55,13 +55,13 @@ protected:
 };
 
 TEST_F(MatrixPropsFixture, MatrixIsSymmetricWorks) {
-    EXPECT_TRUE(defaultMat.isSymmetric());
-    EXPECT_TRUE(singleEltMat.isSymmetric());
-    EXPECT_TRUE(Matrix<double>::identity(5).isSymmetric());
-    EXPECT_TRUE(threeDimSymmetric.isSymmetric());
-    EXPECT_FALSE(threeDimAsymmetric.isSymmetric());
-    EXPECT_FALSE(almostSymmetricExtraCol.isSymmetric());
-    EXPECT_FALSE(almostSymmetricExtraRow.isSymmetric());
+    EXPECT_TRUE(defaultMat.isSymmetric(0));
+    EXPECT_TRUE(singleEltMat.isSymmetric(0));
+    EXPECT_TRUE(Matrix<double>::identity(5).isSymmetric(0));
+    EXPECT_TRUE(threeDimSymmetric.isSymmetric(0));
+    EXPECT_FALSE(threeDimAsymmetric.isSymmetric(0));
+    EXPECT_FALSE(almostSymmetricExtraCol.isSymmetric(0));
+    EXPECT_FALSE(almostSymmetricExtraRow.isSymmetric(0));
 }
 
 TEST_F(MatrixPropsFixture, MatrixIsUpperTriangularWorks) {
