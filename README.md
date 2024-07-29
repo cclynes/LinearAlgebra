@@ -59,6 +59,6 @@ The following is a running list of some things I need to take care of, in no par
 - Add functions to compute tolerance/allowable error
 - Write a function to generate random invertible nxn matrices
 - Add hessenberg and permutated triangular solvers
-- Reorganize a bit - you should maybe make the system solving functions members of classes inheriting from a centralized template class specific to system solving
+- Reorganize a bit - maybe make the system solving functions members of classes inheriting from a centralized template class specific to system solving
 - Add function to generate random SPD matrix
 - Build functionality to measure time-performance
